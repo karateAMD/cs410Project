@@ -1,0 +1,4 @@
+JAR location : s3://us-west-2.elasticmapreduce/libs/script-runner/script-runner.jar
+Main class : None
+Arguments : s3://cs410-project/apps/run.sh s3://cs410-project/amazon-input/reviews_Musical_Instruments_5.json.gz s3://cs410-project/OUTPUT_MUSICAL_INSTRUMENTS/
+Action on failure: Continue

@@ -1,0 +1,50 @@
+{
+  "productID": "0000013714",
+  "goodRatingWords":
+      {
+        "word1": 0.00432,
+        "word2": 0.00385,
+        "word3": 0.00133
+      },
+  "badRatingWords":
+      {
+        "word1": 0.00599,
+        "word2": 0.00401,
+        "word3": 0.00182,
+        "word4": 0.00122,
+        "word5": 0.00039
+      }
+},
+{
+  "productID": "B008UBQZKU",
+  "badRatingWords":
+      {
+        "word1": 0.00323,
+        "word2": 0.00222,
+        "word3": 0.00099,
+        "word4": 0.00087
+      }
+  "goodRatingWords":
+      {
+        "word1": 0.00822,
+        "word2": 0.00321,
+        "word3": 0.00044,
+        "word4": 0.00030
+      }
+},
+{
+  "productID": "B00B608000",
+  "badRatingWords":
+      {
+        "word1": 0.00822,
+        "word2": 0.00321,
+        "word3": 0.00044,
+        "word4": 0.00030
+      },
+  "goodRatingWords":
+      {
+        "word1": 0.00323,
+        "word2": 0.00222,
+        "word3": 0.00099
+      }
+}
