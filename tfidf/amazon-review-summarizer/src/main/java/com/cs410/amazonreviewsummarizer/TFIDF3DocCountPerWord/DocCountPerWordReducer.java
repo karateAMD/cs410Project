@@ -1,8 +1,6 @@
 package com.cs410.amazonreviewsummarizer.TFIDF3DocCountPerWord;
 
-import com.cs410.amazonreviewsummarizer.GLOBAL_COUNTER;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -16,7 +14,7 @@ import java.util.HashMap;
  */
 public class DocCountPerWordReducer extends Reducer<Text, Text, NullWritable, Text> {
     private Long totalDocs;
-    private Text word_tfIdf = new Text();
+    private Text word_docId_tfidf = new Text();
     private MultipleOutputs<NullWritable,Text> outputs;
 
     @Override
@@ -29,9 +27,8 @@ public class DocCountPerWordReducer extends Reducer<Text, Text, NullWritable, Te
 
     @Override
     protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-        // input:  word => (docId, wordCount, wordsPerDoc)
-        // output: (word, docId)  =>  tf-idf
-        // where docId=productID_binaryReview
+        // input:  word => (productID_binaryReview, wordCount, wordsPerDoc)
+        // output: word,productID_binaryReview,tfidf
 
         int docsPerWord = 0;
         String word = key.toString();
@@ -54,8 +51,8 @@ public class DocCountPerWordReducer extends Reducer<Text, Text, NullWritable, Te
             double wordCount = (double)wordCount_wordsPerDoc[0].intValue();
             double wordsPerDoc = (double)wordCount_wordsPerDoc[1].intValue();
             double tfidf = (wordCount / wordsPerDoc) * Math.log(totalDocs / docsPerWord);
-            word_tfIdf.set(word + "," + tfidf); // "word,tfidf"
-            outputs.write("tfidf3output", NullWritable.get(), word_tfIdf, docId);
+            word_docId_tfidf.set(word + "," + docId + "," + tfidf); // "word,productID_binaryReview,tfidf"
+            outputs.write("tfidf3output", NullWritable.get(), word_docId_tfidf, "whatever");
         }
 
     }

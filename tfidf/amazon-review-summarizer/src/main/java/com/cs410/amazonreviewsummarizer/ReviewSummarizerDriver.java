@@ -21,6 +21,7 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.LazyOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
@@ -40,7 +41,6 @@ public class ReviewSummarizerDriver extends Configured implements Tool {
         String outputRoot = args[1];
 
         // intermediate output directories
-
         String makeDocsOutputDir = "/intermediate_results/tfidf_0_docs/";
         String wordCountOutputDir = "/intermediate_results/tfidf_1_wordcounts/";
         String wcPerDocOutputDir = "/intermediate_results/tfidf_2_wordcountsPerDoc/";
@@ -74,6 +74,8 @@ public class ReviewSummarizerDriver extends Configured implements Tool {
         TextOutputFormat.setOutputPath(makeDocsJob, new Path(makeDocsOutputDir));
         MultipleOutputs.addNamedOutput(makeDocsJob, "tfidf0output", TextOutputFormat.class,
                 NullWritable.class, Text.class);
+        LazyOutputFormat.setOutputFormatClass(makeDocsJob, TextOutputFormat.class);
+
 
         boolean ret = makeDocsJob.waitForCompletion(true);
         if (!ret) return -1;
@@ -101,11 +103,14 @@ public class ReviewSummarizerDriver extends Configured implements Tool {
         FileOutputFormat.setOutputPath(wordCountJob, new Path(wordCountOutputDir));
         FileOutputFormat.setCompressOutput(wordCountJob, true);
         FileOutputFormat.setOutputCompressorClass(wordCountJob, GzipCodec.class);
+        LazyOutputFormat.setOutputFormatClass(wordCountJob, TextOutputFormat.class);
 
         ret = wordCountJob.waitForCompletion(true);
         if (!ret) return -1;
-        Runtime.getRuntime().exec("hadoop fs -rm -r " + makeDocsOutputDir).waitFor();
-
+        /*else {
+            System.out.println("Removing " + makeDocsOutputDir);
+            Runtime.getRuntime().exec("hadoop fs -rm -r " + makeDocsOutputDir).waitFor();
+        }*/
 
         // Job 2: WordCountPerDoc, takes {(word,docId) => wordCount} and
         // outputs {(word,docId) => (wordCount, wordsPerDoc)}
@@ -123,16 +128,19 @@ public class ReviewSummarizerDriver extends Configured implements Tool {
         FileOutputFormat.setOutputPath(wordcountPerDocJob, new Path(wcPerDocOutputDir));
         FileOutputFormat.setCompressOutput(wordcountPerDocJob, true);
         FileOutputFormat.setOutputCompressorClass(wordcountPerDocJob, GzipCodec.class);
+        LazyOutputFormat.setOutputFormatClass(wordcountPerDocJob, TextOutputFormat.class);
 
         ret = wordcountPerDocJob.waitForCompletion(true);
         if (!ret) return -1;
-        Runtime.getRuntime().exec("hadoop fs -rm -r " + wordCountOutputDir).waitFor();
-
+        /*else {
+            System.out.println("Removing " + wordCountOutputDir);
+            Runtime.getRuntime().exec("hadoop fs -rm -r " + wordCountOutputDir).waitFor();
+        }*/
 
         // Job 3: DocCountPerWord takes {(word,docId) => (wordCount,wordsPerDoc)} and
         // outputs {(word,docId) => (wordCount, wordsPerDoc, docsPerWord)}
-        conf.set("mapreduce.reduce.java.opts", "-Xmx8g");
-        conf.set("mapreduce.reduce.memory.mb", "10000");
+        conf.set("mapreduce.reduce.java.opts", "-Xmx4g");
+        conf.set("mapreduce.reduce.memory.mb", "5000");
 
         Job docCountPerWordJob = Job.getInstance(conf);
         docCountPerWordJob.setJobName("TFIDF 3: Doc Count per Word");
@@ -140,9 +148,7 @@ public class ReviewSummarizerDriver extends Configured implements Tool {
         docCountPerWordJob.setJarByClass(ReviewSummarizerDriver.class);
         docCountPerWordJob.setMapperClass(DocCountPerWordMapper.class);
         docCountPerWordJob.setReducerClass(DocCountPerWordReducer.class);
-        docCountPerWordJob.setMapOutputKeyClass(Text.class);
-        docCountPerWordJob.setMapOutputValueClass(Text.class);
-        docCountPerWordJob.setOutputKeyClass(NullWritable.class);
+        docCountPerWordJob.setOutputKeyClass(Text.class);
         docCountPerWordJob.setOutputValueClass(Text.class);
 
         FileInputFormat.setInputDirRecursive(docCountPerWordJob, true);
@@ -151,12 +157,15 @@ public class ReviewSummarizerDriver extends Configured implements Tool {
         FileOutputFormat.setCompressOutput(docCountPerWordJob, true);
         FileOutputFormat.setOutputCompressorClass(docCountPerWordJob, GzipCodec.class);
         MultipleOutputs.addNamedOutput(docCountPerWordJob, "tfidf3output", TextOutputFormat.class,
-                NullWritable.class, Text.class);
+                Text.class, Text.class);
+        LazyOutputFormat.setOutputFormatClass(docCountPerWordJob, TextOutputFormat.class);
 
         ret = docCountPerWordJob.waitForCompletion(true);
         if (!ret) return -1;
-        Runtime.getRuntime().exec("hadoop fs -rm -r " + wcPerDocOutputDir).waitFor();
-
+        /*else {
+            System.out.println("Removing " + wcPerDocOutputDir);
+            Runtime.getRuntime().exec("hadoop fs -rm -r " + wcPerDocOutputDir).waitFor();
+        }*/
 
         // Job 4: PrettifyOutput creates json output
         Job prettifyOutputJob = Job.getInstance(conf);
@@ -179,11 +188,14 @@ public class ReviewSummarizerDriver extends Configured implements Tool {
         FileOutputFormat.setOutputPath(prettifyOutputJob, new Path(finalOutputDir));
         FileOutputFormat.setCompressOutput(prettifyOutputJob, true);
         FileOutputFormat.setOutputCompressorClass(prettifyOutputJob, GzipCodec.class);
+        LazyOutputFormat.setOutputFormatClass(prettifyOutputJob, TextOutputFormat.class);
 
         ret = prettifyOutputJob.waitForCompletion(true);
         if (!ret) return -1;
-        Runtime.getRuntime().exec("hadoop fs -rm -r " + docCountPerWordOutputDir).waitFor();
-
+        /*else {
+            System.out.println("Removing " + docCountPerWordOutputDir);
+            Runtime.getRuntime().exec("hadoop fs -rm -r " + docCountPerWordOutputDir).waitFor();
+        }*/
 
         return 0;
     }

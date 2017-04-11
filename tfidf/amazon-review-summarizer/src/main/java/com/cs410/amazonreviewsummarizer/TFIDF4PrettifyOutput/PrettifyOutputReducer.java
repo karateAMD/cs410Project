@@ -12,8 +12,9 @@ import java.io.IOException;
  * Created by angelading on 3/24/17.
  */
 public class PrettifyOutputReducer extends Reducer<PrettifyOutputCompositeKey, Text, NullWritable, Text> {
+    private static int MAX_WORDS_PER_RATING_GROUP = 50;
     // reduce input: productID => [(binaryRating, word, tfidf)]
-    // reduce output: see below. also, https://www.tutorialspoint.com/json/json_java_example.htm
+    // reduct output: files with contents like below...
     /**********************************************
      {
      "productID": "0000013714",
@@ -41,6 +42,8 @@ public class PrettifyOutputReducer extends Reducer<PrettifyOutputCompositeKey, T
         JSONObject productObject = new JSONObject();
         JSONObject goodRatingObject = new JSONObject();
         JSONObject badRatingObject = new JSONObject();
+        int numGoodWords = 0;
+        int numBadWords = 0;
 
         try {
             productObject.put("productID", key.getProductID());
@@ -48,17 +51,20 @@ public class PrettifyOutputReducer extends Reducer<PrettifyOutputCompositeKey, T
             productObject.put("badRatingWords", badRatingObject);
 
             for (Text value : values) {
+                System.out.println(value);
                 String[] binaryRating_word_tfidf = value.toString().split(",");
                 int binaryRating = Integer.parseInt(binaryRating_word_tfidf[0]);
                 String word = binaryRating_word_tfidf[1];
                 double tfidf = Double.parseDouble(binaryRating_word_tfidf[2]);
 
-                if (binaryRating == 0) {
+                if (binaryRating == 0 && numGoodWords <= MAX_WORDS_PER_RATING_GROUP) {
                     // this word belongs to the good rating group
                     goodRatingObject.put(word, tfidf);
-                } else {
+                    numGoodWords++;
+                } else if (numBadWords <= MAX_WORDS_PER_RATING_GROUP) {
                     // this word belongs to the bad rating group
                     badRatingObject.put(word, tfidf);
+                    numBadWords++;
                 }
             }
 

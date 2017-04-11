@@ -21,8 +21,6 @@ public class DocCountPerWordMapper extends Mapper<LongWritable,Text,Text,Text> {
         String wordCount = wordCount_wordsPerDoc[0];
         String wordsPerDoc = wordCount_wordsPerDoc[1];
 
-        System.out.println("word="+word_docId[0]+", docId="+word_docId[1]+", wordCount="+wordCount+", wordsPerDoc="+wordsPerDoc);
-
         word.set(word_docId[0]);
         docId_wordCount_wordsPerDoc.set(word_docId[1] + "," + wordCount + "," + wordsPerDoc);
         context.write(word, docId_wordCount_wordsPerDoc);

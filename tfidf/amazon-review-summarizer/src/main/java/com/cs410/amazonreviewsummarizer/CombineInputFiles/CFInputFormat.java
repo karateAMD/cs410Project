@@ -17,7 +17,7 @@ public class CFInputFormat extends CombineFileInputFormat<CFFileLineWritable, Te
 
     public CFInputFormat(){
         super();
-        setMaxSplitSize(512*1024); // 64 MB, default block size on hadoop
+        setMaxSplitSize(1*1024*1024); // 64 MB, default block size on hadoop
     }
 
     @Override

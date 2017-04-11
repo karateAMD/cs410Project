@@ -22,7 +22,6 @@ public class CFRecordReader extends RecordReader<CFFileLineWritable, Text>{
     private Path path;
     private CFFileLineWritable key;
     private Text value;
-
     private FSDataInputStream fileIn;
     private LineReader reader;
 
@@ -70,8 +69,11 @@ public class CFRecordReader extends RecordReader<CFFileLineWritable, Text>{
     public boolean nextKeyValue() throws IOException{
         if (key == null) {
             key = new CFFileLineWritable();
-            key.fileName = path.getName();
+            key.fileName = path.toString();
+            return true;
         }
+        return false;
+        /*
         key.offset = pos;
         if (value == null){
             value = new Text();
@@ -87,6 +89,6 @@ public class CFRecordReader extends RecordReader<CFFileLineWritable, Text>{
             return false;
         } else{
             return true;
-        }
+        }*/
     }
 }
