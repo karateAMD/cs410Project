@@ -47,7 +47,6 @@ public class WordCountMapper extends Mapper<CFFileLineWritable, Text, Text, IntW
             String[] words = line.split(" ");
             for (String w : words) {
                 String word = w.toLowerCase().replaceAll("[^a-zA-Z']", "");
-                System.out.println(word);
 
                 // output word if it isnt a stopword
                 if (!STOPWORDS.contains(word) && word.length() > 0) {

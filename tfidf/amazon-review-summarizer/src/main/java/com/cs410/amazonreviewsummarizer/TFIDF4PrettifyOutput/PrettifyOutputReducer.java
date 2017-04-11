@@ -52,7 +52,7 @@ public class PrettifyOutputReducer extends Reducer<PrettifyOutputCompositeKey, T
 
             for (Text value : values) {
                 System.out.println(value);
-                String[] binaryRating_word_tfidf = value.toString().split(",");
+                String[] binaryRating_word_tfidf = value.toString().split(",", -1);
                 int binaryRating = Integer.parseInt(binaryRating_word_tfidf[0]);
                 String word = binaryRating_word_tfidf[1];
                 double tfidf = Double.parseDouble(binaryRating_word_tfidf[2]);
