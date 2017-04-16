@@ -57,20 +57,34 @@ public class SummaryStatsDriver extends Configured implements Tool {
         calculateStatsJob.setOutputKeyClass(Text.class);
         calculateStatsJob.setOutputValueClass(Text.class);
 
+        TextInputFormat.addInputPath(calculateStatsJob, new Path(args[0]));
+        TextOutputFormat.setOutputPath(calculateStatsJob, new Path(statsCalculationOutputDir));
         TextInputFormat.setInputDirRecursive(calculateStatsJob, true);
         TextOutputFormat.setCompressOutput(calculateStatsJob, true);
         TextOutputFormat.setOutputCompressorClass(calculateStatsJob, GzipCodec.class);
-        TextInputFormat.addInputPath(calculateStatsJob, new Path(args[0]));
-        TextOutputFormat.setOutputPath(calculateStatsJob, new Path(statsCalculationOutputDir));
         LazyOutputFormat.setOutputFormatClass(calculateStatsJob, TextOutputFormat.class);
 
         boolean ret = calculateStatsJob.waitForCompletion(true);
         if (!ret) return -1;
 
-
         Job prettifyOutputJob = Job.getInstance(conf);
-        // todo
+        prettifyOutputJob.setJobName("Prettify Output");
+        prettifyOutputJob.setNumReduceTasks(0);
 
+        prettifyOutputJob.setJarByClass(SummaryStatsDriver.class);
+        prettifyOutputJob.setMapperClass(PrettifyOutputMapper.class);
+        prettifyOutputJob.setOutputKeyClass(NullWritable.class);
+        prettifyOutputJob.setOutputValueClass(Text.class);
+
+        TextInputFormat.addInputPath(prettifyOutputJob, new Path(statsCalculationOutputDir));
+        TextOutputFormat.setOutputPath(prettifyOutputJob, new Path(finalOutputDir));
+        TextInputFormat.setInputDirRecursive(prettifyOutputJob, true);
+        TextOutputFormat.setCompressOutput(prettifyOutputJob, true);
+        TextOutputFormat.setOutputCompressorClass(prettifyOutputJob, GzipCodec.class);
+        LazyOutputFormat.setOutputFormatClass(prettifyOutputJob, TextOutputFormat.class);
+
+        ret = prettifyOutputJob.waitForCompletion(true);
+        if (!ret) return -1;
         return 0;
     }
 

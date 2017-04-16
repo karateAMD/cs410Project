@@ -24,36 +24,30 @@ public class SummaryStatsMapper extends Mapper<LongWritable, Text, Text, Text> {
         try {
             JSONObject json = new JSONObject(value.toString());
             String prodID = json.getString("asin");
-            int rating = (int)json.getDouble("overall");
+            double rating = json.getDouble("overall");
             int numReviews = 1;
             int[] ratingCounts = {0,0,0,0,0};
 
             // Determine if rating is a 1, 2, 3, 4, or 5.
             // Assign a count of "1" to that rating's element in the array.
-            switch (rating) {
-                case 1:
-                    ratingCounts[0] = 1;
-                    break;
-                case 2:
-                    ratingCounts[1] = 1;
-                    break;
-                case 3:
-                    ratingCounts[2] = 1;
-                    break;
-                case 4:
-                    ratingCounts[3] = 1;
-                    break;
-                default:
-                    ratingCounts[4] = 1;
-                    break;
-            }
+            if (rating == 1)
+                ratingCounts[0] = 1;
+            else if (rating == 2)
+                ratingCounts[1] = 1;
+            else if (rating == 3)
+                ratingCounts[2] = 1;
+            else if (rating == 4)
+                ratingCounts[3] = 1;
+            else
+                ratingCounts[4] = 1;
 
             String ratingCountsStr = ratingCounts[0]+"-"+ratingCounts[1]+"-"+ratingCounts[2]+"-"
                                     +ratingCounts[3]+"-"+ratingCounts[4];
 
             productID.set(prodID);
             stats.set(rating+","+numReviews+","+ratingCountsStr);
-
+            System.out.println("Output: "+stats.toString());
+            context.write(productID, stats);
         } catch (Exception e) {
             log.error(e.getStackTrace());
         }
