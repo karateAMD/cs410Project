@@ -8,6 +8,9 @@ class Product (models.Model):
     MeanRating = models.DecimalField(decimal_places=1, default=0, max_digits=2)
     ModeRating = models.IntegerField(default=0)
     NumReviews = models.IntegerField(default=0)
-    GoodWords = JSONField()
-    BadWords = JSONField()
-    Name = models.TextField(null=True)
+    GoodWords = models.TextField()
+    BadWords = models.TextField()
+    ReviewsPerLevel = models.TextField(default='{}')
+    Name = models.TextField(default='')
+
+
