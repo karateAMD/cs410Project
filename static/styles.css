@@ -1,3 +1,22 @@
 body{
   background-color: #F2F2F2;
+  height: auto;
+  padding: 0;
+  margin: 0;
+}
+
+.header{
+  background-color: #962222;
+  color: #FFFFFF;
+  width: auto;
+  height: 80px;
+}
+
+.header_text{
+  text-align: center;
+  vertical-align: middle;
+  font-weight: bold;
+  width: auto;
+  font-size: 50px;
+  margin: auto;
 }
