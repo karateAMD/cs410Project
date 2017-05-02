@@ -20,3 +20,37 @@ body{
   font-size: 50px;
   margin: auto;
 }
+
+.body{
+  width: auto;
+  height:500px;
+
+}
+
+.search {
+  width: auto;
+  margin: auto;
+  height:40px;
+}
+
+.searchTerm {
+  width: 200px;
+  height: auto;
+  margin-left: 50px;
+  margin-top:40px;
+  border: 3px solid #962222;
+  padding: 5px;
+  border-radius: 5px;
+  outline: none;
+  color: #9DBFAF;
+}
+
+.searchButton {
+  width: auto;
+  height: 30px;
+  margin-top:40px;
+  padding: 5px;
+  border-radius: 5px;
+  outline: none;
+  color: #962222;
+}
