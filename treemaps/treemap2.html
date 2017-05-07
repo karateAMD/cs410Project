@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+    productGroup = 'Amazon Prime Video'
+
+    productID = 'Let Them Eat'; //'B002I7Z7V0';
+
+    goodWords = {"given": 0.03633174655755107, "counterpart's": 0.14798541847573077, "activities": 0.06676847344339779, "promising": 0.06658256294958241, "fair": 0.049936922212186804, "short": 0.06301338005090412, "properly": 0.06500696122952107, "putative": 0.1269800901024481, "negative": 0.049936922212186804, "centuriesif": 0.14798541847573077, "anything": 0.029483487106898687, "amazon's": 0.060439152220670825, "needed": 0.12602676010180824, "average": 0.048770845831336375, "managed": 0.05733620657451911, "carry": 0.05626624343491376, "waited": 0.06277476858168989, "fell": 0.04936509906093155, "sounded": 0.06581523366444976, "amazing": 0.03150669002545206, "call": 0.04292747490994267, "plugged": 0.09983221935656848, "together": 0.029483487106898687, "treacly": 0.13748232011093212, "lot": 0.04200892003393608, "actors": 0.03150669002545206, "listening": 0.05626624343491376, "work": 0.048770845831336375, "antoinette's": 0.14798541847573077, "rhyming": 0.11165106669992111, "exactly": 0.04292747490994267, "scripted": 0.05698788054081155, "spanning": 0.09619907562696664, "girl's": 0.0774543604296446, "minutes": 0.029483487106898687, "execution": 0.06458605874305023, "innermost": 0.11555409403470697, "die": 0.05153329366154781, "parallel": 0.07708479295806642, "thoughts": 0.05986732906941557, "verse": 0.09749312907253717, "idea": 0.06977530584830442, "marie": 0.09410000116704019, "teenage": 0.05986732906941557, "towel": 0.10046489978246018, "present": 0.046129127844294286, "hate": 0.04200892003393608, "mundane": 0.07121939948170328, "glimpses": 0.07508828875153425, "concept": 0.046129127844294286, "threw": 0.06962302803234227}
+
+    badWords = {"sure": 0.027147870745879623, "day": 0.029483487106898687, "life": 0.02100446001696804, "one": 0.01050223000848402, "say": 0.024385422915668187, "like": 0.01050223000848402, "stars": 0.027147870745879623, "put": 0.029483487106898687, "even": 0.016645640737395603}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+    google.charts.load('current', {'packages':['treemap']});
+    google.charts.setOnLoadCallback(drawChart);
+    goodColor = 20;
+    badColor = 20;
+
+    var arrBad = [['Location', 'Parent', 'Market trade volume (size)', 'Market increase/decrease (color)']];
+    arrBad.push([productGroup, null, 0, 0]);
+    arrBad.push([productID, productGroup, 0, 0]);
+
+    for (var word in badWords) {
+        if (badWords.hasOwnProperty(word)) {
+            tfidf = badWords[word];
+            arrBad.push([word, productID, tfidf, badColor*tfidf])
+        }
+    }
+
+    var arrGood = [['Location', 'Parent', 'Market trade volume (size)', 'Market increase/decrease (color)']];
+    arrGood.push([productGroup, null, 0, 0]);
+    arrGood.push([productID, productGroup, 0, 0]);
+
+    for (var word in goodWords) {
+        if (goodWords.hasOwnProperty(word)) {
+            tfidf = goodWords[word];
+            arrGood.push([word, productID, tfidf, goodColor*tfidf])
+        }
+    }
+
+    function drawChart() {
+        var badData = google.visualization.arrayToDataTable(arrBad);
+
+        badTree = new google.visualization.TreeMap(document.getElementById('chart_div_bad'));
+
+        badTree.draw(badData, {
+            minColor: '#fff',
+            midColor: '#c00',
+            maxColor: '#d00',
+            headerHeight: 30,
+            fontColor: 'black',
+            showScale: true
+        });   
+
+        var goodData = google.visualization.arrayToDataTable(arrGood);
+
+        goodTree = new google.visualization.TreeMap(document.getElementById('chart_div_good'));
+
+        goodTree.draw(goodData, {
+            minColor: '#fff',
+            midColor: '#0c0',
+            maxColor: '#0d0',
+            headerHeight: 30,
+            fontColor: 'black',
+            showScale: true
+        });    
+
+    }
+    </script>
+  </head>
+  <body>
+    <div style="text-align:center;">
+        <div id="chart_div_bad" style="width: 450px; height: 500px; display:inline-block;"></div>
+        <div id="chart_div_good" style="width: 450px; height: 500px; display:inline-block;"></div>
+    </div>
+  </body>
+</html>
