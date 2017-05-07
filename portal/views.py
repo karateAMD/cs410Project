@@ -10,3 +10,12 @@ def home(request):
 
 def treemap1(request):
     return render_to_response('treemap1.html')
+
+def treemap2(request):
+    return render_to_response('treemap2.html')
+
+def treemap3(request):
+    return render_to_response('treemap3.html')
+
+def treemap4(request):
+    return render_to_response('treemap4.html')
