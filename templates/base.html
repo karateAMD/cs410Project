@@ -5,9 +5,17 @@
     <title>Base Page</title>
     <meta name="base_url" content="{{ base_url }}">
     <link rel="stylesheet" href= {% static "/styles.css" %}/>
+
+    {% block header %}
+    {% endblock %}
   </head>
   <body>
-    {% block header %}
+    <div id=header class=header>
+      <div id=header_text class=header_text>
+        Amazon Review Summarizer
+      </div>
+    </div>
+    {% block content %}
     {% endblock %}
   </body>
 </html>

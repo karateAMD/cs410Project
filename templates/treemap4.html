@@ -1,0 +1,78 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+    productGroup = 'Amazon Prime Video'
+
+    productID = 'The Man With X-Ray Eyes';
+
+    goodWords = {"get": 0.12206803207423442, "mor": 0.8689823199897049, "classic": 0.2932285921794731, "movie": 0.07701635339554948, "upset": 0.41261911852270083, "pay": 0.28499437305128184, "genre": 0.34838824621434994, "movies": 0.19908438546978388, "spent": 0.32115241754401824}
+
+    badWords = {"offends": 0.07202967472243595, "uninvited": 0.08246707801147457, "saturday": 0.043556857044915964, "racist": 0.05451025510003467, "spurned": 0.08399003721374014, "icy": 0.068263109388429, "weekend": 0.04182793226302474, "eyedrops": 0.10390465552551309, "disappoints": 0.05178228138782534, "grier's": 0.11127886653707314, "tennis": 0.06807015887803412, "approached": 0.05775899605270682, "m": 0.048104133798394046, "hoochi": 0.11127886653707314, "dispensing": 0.07995047416149399, "afternoon": 0.04578792652344862, "murderreally": 0.11127886653707314, "lumbering": 0.08320043489263132, "dial": 0.06789165975963934, "fond": 0.047631242707214964, "kelly": 0.05469854847343256, "grace": 0.043556857044915964, "pluck": 0.0788848415916308, "uncontrollable": 0.07545291187207105, "scientist": 0.04951021649103748, "x": 0.04440837521165571, "ray": 0.08487200099072924, "milland": 0.08915623347618695, "thy": 0.068263109388429, "robert": 0.043378057913890634, "bmovie": 0.05647093295107665, "corman": 0.07545291187207105, "smitten": 0.06413062255564572, "thee": 0.06438392732898315, "nudies": 0.10390465552551309, "swinging": 0.06400167191168461, "cummings": 0.07839330215100844, "faced": 0.04593072461208841, "rainy": 0.04787031564181133, "weekends": 0.06017012564701971, "xray": 0.07792010616328225, "twisting": 0.059398896901932965, "broadcasts": 0.06425802884337674, "enormous": 0.05323347133984531, "overs": 0.06387113901177169, "roger": 0.05598606583941367, "roomful": 0.09415596722358671, "clock": 0.05826025055246288, "imbuing": 0.09221668105546123, "viva": 0.13889272165154362, "rosey": 0.09221668105546123}
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+    google.charts.load('current', {'packages':['treemap']});
+    google.charts.setOnLoadCallback(drawChart);
+    goodColor = 20;
+    badColor = 20;
+
+    var arrBad = [['Location', 'Parent', 'Market trade volume (size)', 'Market increase/decrease (color)']];
+    arrBad.push([productGroup, null, 0, 0]);
+    arrBad.push([productID, productGroup, 0, 0]);
+
+    for (var word in badWords) {
+        if (badWords.hasOwnProperty(word)) {
+            tfidf = badWords[word];
+            arrBad.push([word, productID, tfidf, badColor*tfidf])
+        }
+    }
+
+    var arrGood = [['Location', 'Parent', 'Market trade volume (size)', 'Market increase/decrease (color)']];
+    arrGood.push([productGroup, null, 0, 0]);
+    arrGood.push([productID, productGroup, 0, 0]);
+
+    for (var word in goodWords) {
+        if (goodWords.hasOwnProperty(word)) {
+            tfidf = goodWords[word];
+            arrGood.push([word, productID, tfidf, goodColor*tfidf])
+        }
+    }
+
+    function drawChart() {
+        var badData = google.visualization.arrayToDataTable(arrBad);
+
+        badTree = new google.visualization.TreeMap(document.getElementById('chart_div_bad'));
+
+        badTree.draw(badData, {
+            minColor: '#fff',
+            midColor: '#c00',
+            maxColor: '#d00',
+            headerHeight: 30,
+            fontColor: 'black',
+            showScale: true
+        });   
+
+        var goodData = google.visualization.arrayToDataTable(arrGood);
+
+        goodTree = new google.visualization.TreeMap(document.getElementById('chart_div_good'));
+
+        goodTree.draw(goodData, {
+            minColor: '#fff',
+            midColor: '#0c0',
+            maxColor: '#0d0',
+            headerHeight: 30,
+            fontColor: 'black',
+            showScale: true
+        });    
+
+    }
+    </script>
+  </head>
+  <body>
+    <div style="text-align:center;">
+        <div id="chart_div_bad" style="width: 450px; height: 500px; display:inline-block;"></div>
+        <div id="chart_div_good" style="width: 450px; height: 500px; display:inline-block;"></div>
+    </div>
+  </body>
+</html>

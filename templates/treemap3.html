@@ -1,0 +1,78 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+    productGroup = 'Amazon Prime Video'
+
+    productID = 'The Thirst';
+
+    goodWords = {"comparison": 0.047214453611004875, "filler": 0.05095379807760327, "alternately": 0.0759064874142157, "waste": 0.027882503172074077, "dull": 0.04029925468371775, "vampire": 0.0525789369424307, "afternoon": 0.050047268525629886, "etc": 0.02889426336962791, "technical": 0.045488639598001694, "emotionsi": 0.10550968752699441, "else": 0.025549122992281622, "saturday": 0.04760865770025698, "unwatchable": 0.05444338636190953, "aspects": 0.03954880676351343, "gushing": 0.0776258514143587, "directing": 0.04346127463120196, "movie": 0.0322394037469742, "dark": 0.131777364839824, "filming": 0.07986016754616619, "blood": 0.0387465640718047, "near": 0.0729184701378872, "worse": 0.03483409620411617, "development": 0.03360897392902517, "awful": 0.03594235410881763, "flat": 0.04166882486576872, "silly": 0.03360897392902517, "adequate": 0.058340463218778185, "ok": 0.05354849053474525, "cheap": 0.039154602674261324, "rent": 0.03594235410881763, "exaggerated": 0.05695162558082455, "add": 0.030686713135061144, "meh": 0.05841721535867763, "overthetop": 0.051240921479816896, "clubsit": 0.12163038900563809, "either": 0.027882503172074077, "doi": 0.07289646841518908, "channel": 0.03695411430637146, "apt": 0.06718200375840298, "nothing": 0.06250323729865308, "unrealistic": 0.047214453611004875, "strip": 0.06076449620596746, "genera": 0.08288015929473719, "poorly": 0.0387465640718047, "night": 0.02889426336962791, "writing": 0.02889426336962791, "accurate": 0.03954880676351343, "someone": 0.024179552810230646, "scify": 0.07502382505159565, "score": 0.045944694402109625, "complete": 0.030686713135061144}
+
+    badWords = {"great": 0.00805985093674355, "think": 0.012774561496140811, "just": 0.00805985093674355, "fan": 0.02083441243288436, "get": 0.012774561496140811, "going": 0.01871439433062907, "give": 0.01871439433062907, "far": 0.022626862198317596, "character": 0.022626862198317596, "acting": 0.02083441243288436, "watch": 0.00805985093674355, "characters": 0.01871439433062907, "really": 0.0161197018734871, "feel": 0.02083441243288436, "done": 0.01871439433062907, "time": 0.0161197018734871, "even": 0.012774561496140811, "seem": 0.024179552810230646, "like": 0.00805985093674355, "can": 0.00805985093674355, "end": 0.01871439433062907, "film": 0.012774561496140811}
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+    google.charts.load('current', {'packages':['treemap']});
+    google.charts.setOnLoadCallback(drawChart);
+    goodColor = 20;
+    badColor = 20;
+
+    var arrBad = [['Location', 'Parent', 'Market trade volume (size)', 'Market increase/decrease (color)']];
+    arrBad.push([productGroup, null, 0, 0]);
+    arrBad.push([productID, productGroup, 0, 0]);
+
+    for (var word in badWords) {
+        if (badWords.hasOwnProperty(word)) {
+            tfidf = badWords[word];
+            arrBad.push([word, productID, tfidf, badColor*tfidf])
+        }
+    }
+
+    var arrGood = [['Location', 'Parent', 'Market trade volume (size)', 'Market increase/decrease (color)']];
+    arrGood.push([productGroup, null, 0, 0]);
+    arrGood.push([productID, productGroup, 0, 0]);
+
+    for (var word in goodWords) {
+        if (goodWords.hasOwnProperty(word)) {
+            tfidf = goodWords[word];
+            arrGood.push([word, productID, tfidf, goodColor*tfidf])
+        }
+    }
+
+    function drawChart() {
+        var badData = google.visualization.arrayToDataTable(arrBad);
+
+        badTree = new google.visualization.TreeMap(document.getElementById('chart_div_bad'));
+
+        badTree.draw(badData, {
+            minColor: '#fff',
+            midColor: '#c00',
+            maxColor: '#d00',
+            headerHeight: 30,
+            fontColor: 'black',
+            showScale: true
+        });   
+
+        var goodData = google.visualization.arrayToDataTable(arrGood);
+
+        goodTree = new google.visualization.TreeMap(document.getElementById('chart_div_good'));
+
+        goodTree.draw(goodData, {
+            minColor: '#fff',
+            midColor: '#0c0',
+            maxColor: '#0d0',
+            headerHeight: 30,
+            fontColor: 'black',
+            showScale: true
+        });    
+
+    }
+    </script>
+  </head>
+  <body>
+    <div style="text-align:center;">
+        <div id="chart_div_bad" style="width: 450px; height: 500px; display:inline-block;"></div>
+        <div id="chart_div_good" style="width: 450px; height: 500px; display:inline-block;"></div>
+    </div>
+  </body>
+</html>

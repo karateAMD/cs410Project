@@ -7,3 +7,6 @@ def home(request):
     return render_to_response('home.html', {
         'base_url': base_url
     })
+
+def treemap1(request):
+    return render_to_response('treemap1.html')
