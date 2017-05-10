@@ -53,7 +53,7 @@
             headerHeight: 30,
             fontColor: 'black',
             showScale: true
-        });   
+        });
 
         var goodData = google.visualization.arrayToDataTable(arrGood);
 
@@ -66,7 +66,7 @@
             headerHeight: 30,
             fontColor: 'black',
             showScale: true
-        });    
+        });
 
     }
     </script>
@@ -76,4 +76,114 @@
         <div id="chart_div_bad" style="width: 450px; height: 500px; display:inline-block;"></div>
         <div id="chart_div_good" style="width: 450px; height: 500px; display:inline-block;"></div>
     </div>
+    <script>
+      goodWords = {"ability": 0.047765751681222164, "twosecond": 0.14155126984635116, "drags": 0.069140356876314, "artwork": 0.14302822994581715, "shot": 0.03924710436380015, "shots": 0.046650374273452186, "considered": 0.053819885024700115, "century": 0.05484332802780088, "students": 0.05067402262994899, "completely": 0.036013139852000005, "peter's": 0.0970763486103683, "beaches": 0.08753992335184659, "piece": 0.04188944576661108, "rome": 0.15633703032905397, "classroom": 0.07355324369904097, "edited": 0.05610436247692596, "nude": 0.0733709425076372, "fromfrom": 0.1515972964418098, "st": 0.04605875116446298, "italian": 0.06864055722310863, "rushing": 0.0870128560450223, "views": 0.05484332802780088, "woman": 0.036013139852000005, "therefore": 0.05548755647085645, "terrific": 0.04829281898804643, "educational": 0.045441945158393476, "panoramic": 0.09965600886798212, "afforded": 0.09965600886798212, "highlighted": 0.0774943120393836, "ancient": 0.06071963394241196, "throughout": 0.038247207675583456, "producer": 0.05548755647085645, "beach": 0.06521463290333718, "film": 0.047765751681222164, "architecture": 0.15775123798613894, "known": 0.0803648904997038, "basilica": 0.13150482793219592, "points": 0.044797716715337915, "mentioned": 0.04976793049978473, "coliseum": 0.11234645410258855, "art": 0.04341640976165204, "details": 0.04605875116446298, "topless": 0.08558495431963146, "realize": 0.04188944576661108, "certain": 0.0426730286835716, "europe": 0.06421473621512049, "structures": 0.17507984670369317, "unnecessary": 0.05754046251524814, "eliminating": 0.09000869676847323, "catacombs": 0.13567537921473574, "possibilities": 0.06438625009406256};
+
+      badWords = {"great": 0.010045611312462975, "high": 0.03184383445414811, "also": 0.06103401603711721, "religion": 0.23986045075201723, "short": 0.030136833937388925, "beautiful": 0.12792139405522476, "travel": 0.18895541009234196, "history": 0.12792139405522476, "contemporary": 0.2335940344106092, "architecture": 0.30235653947343294, "video": 0.06103401603711721, "antiquity": 0.4306614073932561, "wish": 0.02596752853953703, "rome": 0.5992919495947069, "relive": 0.2794687734106908, "kids": 0.030136833937388925, "way": 0.06103401603711721, "like": 0.010045611312462975, "art": 0.1664295707529995, "details": 0.17655854613044142, "however": 0.02596752853953703, "even": 0.015921917227074055, "city": 0.17172458074212865, "wonderful": 0.12206803207423442, "informative": 0.15403270679109896, "well": 0.03184383445414811};
+
+      goodFreqList = []
+      badFreqList = []
+      for (var k in goodWords){
+          var size;
+          if (goodWords[k] > 0.2){
+            size = 100;
+          }
+          else if(goodWords[k] > 0.15){
+            size = 75;
+          }
+          else if(goodWords[k] > 0.1)
+            size = 60;
+          else if(goodWords[k] > 0.05)
+            size = 40;
+          else
+            size = 10;
+
+          goodFreqList.push({
+            "text": k,
+            "size": size
+          });
+      }
+
+      for (var k in badWords){
+          var size;
+          if (badWords[k] > 0.2){
+            size = 100;
+          }
+          else if(badWords[k] > 0.15){
+            size = 75;
+          }
+          else if(badWords[k] > 0.1)
+            size = 60;
+          else if(badWords[k] > 0.05)
+            size = 40;
+          else
+            size = 20;
+
+          badFreqList.push({
+            "text": k,
+            "size": size
+          });
+      }
+
+      var badcolor = d3.scale.linear()
+              .domain([0,1,3,5,6,10,15,20,100])
+              .range(["#ff0000", "#e50000", "#cc0000", "#b20000", "#990000", "#7f0000", "#660000", "#4c0000", "#330000"].reverse());
+      var goodcolor = d3.scale.linear()
+              .domain([0,1,3,5,6,10,15,20,100])
+              .range(["#003300", "#004c00", "#006600", "#007f00", "#009900", "#00b200", "#00cc00", "#00e500", "#00ff00"]);
+
+      d3.layout.cloud().size([800, 300])
+              .words(badFreqList)
+              .rotate(0)
+              .fontSize(function(d) { return d.size; })
+              .on("end", drawBad)
+              .start();
+
+      d3.layout.cloud().size([800, 300])
+              .words(goodFreqList)
+              .rotate(0)
+              .fontSize(function(d) { return d.size; })
+              .on("end", drawGood)
+              .start();
+
+
+      function drawGood(words) {
+          d3.select("body").append("svg")
+                  .attr("width", 850)
+                  .attr("height", 350)
+                  .attr("class", "wordcloud")
+                  .append("g")
+                  // without the transform, words words would get cutoff to the left and top, they would
+                  // appear outside of the SVG area
+                  .attr("transform", "translate(320,200)")
+                  .selectAll("text")
+                  .data(words)
+                  .enter().append("text")
+                  .style("font-size", function(d) { return d.size + "px"; })
+                  .style("fill", function(d, i) { return goodcolor(i); })
+                  .attr("transform", function(d) {
+                      return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                  })
+                  .text(function(d) { return d.text; });
+          }
+        function drawBad(words) {
+            d3.select("body").append("svg")
+                    .attr("width", 850)
+                    .attr("height", 350)
+                    .attr("class", "wordcloud")
+                    .append("g")
+                    // without the transform, words words would get cutoff to the left and top, they would
+                    // appear outside of the SVG area
+                    .attr("transform", "translate(320,200)")
+                    .selectAll("text")
+                    .data(words)
+                    .enter().append("text")
+                    .style("font-size", function(d) { return d.size + "px"; })
+                    .style("fill", function(d, i) { return badcolor(i); })
+                    .attr("transform", function(d) {
+                        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                    })
+                    .text(function(d) { return d.text; });
+      }
+  </script>
 {% endblock %}

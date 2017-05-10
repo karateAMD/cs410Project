@@ -74,4 +74,108 @@
         <div id="chart_div_bad" style="width: 450px; height: 500px; display:inline-block;"></div>
         <div id="chart_div_good" style="width: 450px; height: 500px; display:inline-block;"></div>
     </div>
+    <script>
+      goodWords = {"comparison": 0.047214453611004875, "filler": 0.05095379807760327, "alternately": 0.0759064874142157, "waste": 0.027882503172074077, "dull": 0.04029925468371775, "vampire": 0.0525789369424307, "afternoon": 0.050047268525629886, "etc": 0.02889426336962791, "technical": 0.045488639598001694, "emotionsi": 0.10550968752699441, "else": 0.025549122992281622, "saturday": 0.04760865770025698, "unwatchable": 0.05444338636190953, "aspects": 0.03954880676351343, "gushing": 0.0776258514143587, "directing": 0.04346127463120196, "movie": 0.0322394037469742, "dark": 0.131777364839824, "filming": 0.07986016754616619, "blood": 0.0387465640718047, "near": 0.0729184701378872, "worse": 0.03483409620411617, "development": 0.03360897392902517, "awful": 0.03594235410881763, "flat": 0.04166882486576872, "silly": 0.03360897392902517, "adequate": 0.058340463218778185, "ok": 0.05354849053474525, "cheap": 0.039154602674261324, "rent": 0.03594235410881763, "exaggerated": 0.05695162558082455, "add": 0.030686713135061144, "meh": 0.05841721535867763, "overthetop": 0.051240921479816896, "clubsit": 0.12163038900563809, "either": 0.027882503172074077, "doi": 0.07289646841518908, "channel": 0.03695411430637146, "apt": 0.06718200375840298, "nothing": 0.06250323729865308, "unrealistic": 0.047214453611004875, "strip": 0.06076449620596746, "genera": 0.08288015929473719, "poorly": 0.0387465640718047, "night": 0.02889426336962791, "writing": 0.02889426336962791, "accurate": 0.03954880676351343, "someone": 0.024179552810230646, "scify": 0.07502382505159565, "score": 0.045944694402109625, "complete": 0.030686713135061144}
+
+      badWords = {"great": 0.00805985093674355, "think": 0.012774561496140811, "just": 0.00805985093674355, "fan": 0.02083441243288436, "get": 0.012774561496140811, "going": 0.01871439433062907, "give": 0.01871439433062907, "far": 0.022626862198317596, "character": 0.022626862198317596, "acting": 0.02083441243288436, "watch": 0.00805985093674355, "characters": 0.01871439433062907, "really": 0.0161197018734871, "feel": 0.02083441243288436, "done": 0.01871439433062907, "time": 0.0161197018734871, "even": 0.012774561496140811, "seem": 0.024179552810230646, "like": 0.00805985093674355, "can": 0.00805985093674355, "end": 0.01871439433062907, "film": 0.012774561496140811}
+
+      goodFreqList = []
+      badFreqList = []
+      for (var k in goodWords){
+          var size;
+          if (goodWords[k] > 0.2){
+            size = 100;
+          }
+          else if(goodWords[k] > 0.15){
+            size = 75;
+          }
+          else if(goodWords[k] > 0.1)
+            size = 60;
+          else if(goodWords[k] > 0.05)
+            size = 40;
+          else
+            size = 10;
+
+          goodFreqList.push({
+            "text": k,
+            "size": size
+          });
+      }
+
+      for (var k in badWords){
+          var size;
+          if(badWords[k] > 0.1)
+            size = 100;
+          else if(badWords[k] > 0.05)
+            size = 80;
+          else
+            size = 50;
+
+          badFreqList.push({
+            "text": k,
+            "size": size
+          });
+      }
+
+      var badcolor = d3.scale.linear()
+              .domain([0,1,3,5,6,10,15,20,100])
+              .range(["#ff0000", "#e50000", "#cc0000", "#b20000", "#990000", "#7f0000", "#660000", "#4c0000", "#330000"].reverse());
+      var goodcolor = d3.scale.linear()
+              .domain([0,1,3,5,6,10,15,20,100])
+              .range(["#003300", "#004c00", "#006600", "#007f00", "#009900", "#00b200", "#00cc00", "#00e500", "#00ff00"]);
+
+      d3.layout.cloud().size([800, 300])
+              .words(badFreqList)
+              .rotate(0)
+              .fontSize(function(d) { return d.size; })
+              .on("end", drawBad)
+              .start();
+
+      d3.layout.cloud().size([800, 300])
+              .words(goodFreqList)
+              .rotate(0)
+              .fontSize(function(d) { return d.size; })
+              .on("end", drawGood)
+              .start();
+
+
+      function drawGood(words) {
+          d3.select("body").append("svg")
+                  .attr("width", 850)
+                  .attr("height", 350)
+                  .attr("class", "wordcloud")
+                  .append("g")
+                  // without the transform, words words would get cutoff to the left and top, they would
+                  // appear outside of the SVG area
+                  .attr("transform", "translate(320,200)")
+                  .selectAll("text")
+                  .data(words)
+                  .enter().append("text")
+                  .style("font-size", function(d) { return d.size + "px"; })
+                  .style("fill", function(d, i) { return goodcolor(i); })
+                  .attr("transform", function(d) {
+                      return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                  })
+                  .text(function(d) { return d.text; });
+          }
+        function drawBad(words) {
+            d3.select("body").append("svg")
+                    .attr("width", 850)
+                    .attr("height", 350)
+                    .attr("class", "wordcloud")
+                    .append("g")
+                    // without the transform, words words would get cutoff to the left and top, they would
+                    // appear outside of the SVG area
+                    .attr("transform", "translate(320,200)")
+                    .selectAll("text")
+                    .data(words)
+                    .enter().append("text")
+                    .style("font-size", function(d) { return d.size + "px"; })
+                    .style("fill", function(d, i) { return badcolor(i); })
+                    .attr("transform", function(d) {
+                        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                    })
+                    .text(function(d) { return d.text; });
+      }
+  </script>
 {% endblock %}
